@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="kr">
+  <head>
+    <base target="_top">
+    <title>전체 통계</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.kr.min.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+      <script>
+              $(document).ready(function() {
+                  $('.nav > li').removeClass('active');
+                  $('#menu_report').addClass('active');
+                  
+                  $(window).resize(function() {
+                    $("#resolution").html("해상도: " + $(document).width() + " x " + $(document).height());
+                  }).resize();
+              });
+              
+           </script>
+  </head>
+  <body>
+  <?!= include('PC_Menu'); ?>
+  <div class="container">
+
+      
+      <!-- dispaly section start -->
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="table-responsive">
+              <table class="table table-bordered" style="text-align: center">
+                <tr class="warning" style="font-weight:900">
+
+                  <? 
+                    var emps = empLoadAll;
+                    var listByAll = getReportAll;
+                    var resultDic = {}; 
+                    check(listByAll);
+                    // 쿼리를 통해 가져온 정보를 사전형으로 저장
+                    var startYear = listByAll[0][0];
+                    var endOfYear; 
+                    var gubunIndex = parseInt(startYear);
+                                        
+                    for(var i = 0; i < listByAll.length; i ++) {
+                      if( !listByAll[i][0].equals(startYear) ) { // 년도가 변화하면 gubunIndex를 상승시켜 구분
+                        endOfYear = listByAll[i][0];
+                        gubunIndex++;
+                        resultDic[listByAll[i][0] + " " + listByAll[i][1]] = [[listByAll[i][2],listByAll[i][3]], gubunIndex];
+                        
+                      } else {
+                        resultDic[listByAll[i][0] + " " + listByAll[i][1]] = [[listByAll[i][2],listByAll[i][3]], gubunIndex];
+                      }
+                    }
+                  ?>
+                  
+                  <td><?=word['NAME']?></td>
+                  <td><?=word['GUBUN']?></td>
+                  <? 
+                  // 년도 갯수 구해놓아야함 -> 열 갯수
+                  var colCount = parseInt(endOfYear) - parseInt(startYear) + 1;
+                  
+                  Logger.log("colCount= " + colCount);
+                  for(var i=parseInt(startYear); i <= parseInt(endOfYear); i ++ ) { ?>
+                    <td><?=i+word['YEAR']?></td>
+                  <?}?>
+                  <td><?=word['TOTAL_SUM']?></td>
+                </tr>
+                
+                  <?
+                  // 사전형으로 해당 년도와 분기에 맞게 화면에 뿌림
+                  
+                  for(var i = 0; i < emps.length; i ++) { 
+                       Logger.log("emp:: "+emps[i]);
+                       var key; 
+                       var totalValues = 0; 
+                       if(i % 2 == 0) { ?>
+                         <tr class="active">
+                    <? } else { ?>
+                         <tr class="">
+                    <? } ?>
+                         <td rowspan="2" style="padding-top: 25px"><?=emps[i]?></td>
+                         <td><?=word['REC_SEND']?></td>
+                         
+                    <? var tempYear = parseInt(startYear);
+                   
+                   for(var j = 0; j < colCount; j ++) {
+                         key = tempYear + word['YEAR'] + " " + emps[i]; 
+
+                         ?>
+                         
+                         <? if(resultDic[key] == null) { ?>
+                           <td><span>-</span></td>
+                           
+                         <? } else { 
+                               if(resultDic[key][0][0] != null) { 
+                                 if(parseInt(resultDic[key][0][0]) == 0) {
+                         ?>
+                                 <td><span>-</span></td>
+                               <?
+                                  } else { 
+                                    totalValues += parseInt(resultDic[key][0][0]);
+                               ?> 
+                                 <td><span><?=resultDic[key][0][0]?></span></td>
+                            <? }
+                            } else { ?>
+                            <td><span>-</span></td>
+                       <? } 
+                       } ?>
+                    <?
+                         tempYear++;
+                       }
+                    ?>
+                       <td><?=totalValues?></td>
+                       </tr>  
+                   <? if(i % 2 == 0) { ?>
+                     <tr class="active">
+                   <? } else { ?>
+                     <tr class="">
+                   <? } ?>
+                       <td><?=word['REC_RECV']?></td>
+                   <? totalValues = 0;         
+                      tempYear = parseInt(startYear);
+                      for(var j = 0; j < colCount; j ++) {
+                         
+                         key = tempYear + word['YEAR'] + " " + emps[i];
+                         
+                         ?>
+ 
+                         <? if(resultDic[key] == null) { ?>
+                           <td><span>-</span></td>
+                           
+                         <? } else { 
+                               if(resultDic[key][0][1] != null) { 
+                                 if(parseInt(resultDic[key][0][1]) == 0) {
+                         ?>
+                                 <td><span>-</span></td>
+                               <?
+                                  } else { 
+                                    totalValues += parseInt(resultDic[key][0][1]);
+                               ?> 
+                                 <td><span><?=resultDic[key][0][1]?></span></td>
+                            <? }
+                            } else { ?>
+                            <td><span>-</span></td>
+                       <? } 
+                       } ?>
+                    <?
+                         tempYear++;
+                       }
+                    ?>
+                       <td><?=totalValues?></td>
+                       </tr>
+                  <? } ?>
+                  
+                  <? check("end of HTML source"); ?>
+              </table>
+          </div>
+      </div>
+      <!-- dispaly section end -->
+
+  </div>
+  <!-- container end -->
+  </body>
+</html>

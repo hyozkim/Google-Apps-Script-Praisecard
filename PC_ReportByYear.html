@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="kr">
+  <head>
+    <base target="_top">
+    <title>년도별 통계</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.kr.min.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+      <script>
+              $(document).ready(function() {
+                  $('.nav > li').removeClass('active');
+                  $('#menu_report').addClass('active');
+                  
+                  $(window).resize(function() {
+                    $("#resolution").html("해상도: " + $(document).width() + " x " + $(document).height());
+                  }).resize();
+              });
+              
+           </script>
+  </head>
+  <body>
+  <?!= include('PC_Menu'); ?>
+  <div class="container">
+      <!-- 조회 조건 바 start -->
+      <form id="nreadForm" class="form-horizontal" method="post" action="<?=getScriptProperty("WEB_ROOT_URL")?>?page=PC_ReportByYear"> 
+      <input type="hidden" id="inputYearSelect" name="inputYearSelect" value="<?=inputYearSelect?>"/>
+      
+          <div class="form-group">
+              <div class="col-xs-12 col-sm-6 col-md-6">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle periodSelect" data-toggle="dropdown" aria-expanded="false">
+                      <span id="periodSelect"><?=inputYearSelect?></span>
+                      <span class="glyphicon glyphicon-chevron-down"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <?                       
+                      var periods = quarterList;   
+                      for(var i = 1; i < periods.length; i += 4) { ?>
+                        <li><a class='periods-item'><?=periods[i][0]+periods[0][0]?></a></li>                        
+                      <? } ?>
+                    </ul>
+                  </div>
+                  <div class="btn-group">
+                      <button type="button" class="btn btn-info btn-group-justified" onclick="javascript:$('#nreadForm').submit(); return false;"><?=word['INQUIRY']?></button>
+                  </div>
+              </div>
+          </div>
+      </form>
+      <!-- 조회 조건 바 end -->
+      <!-- dispaly section start -->
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="table-responsive">
+              <table class="table table-bordered" style="text-align: center">
+                <tr class="warning" style="font-weight:900">
+
+                  <td colspan="2"> <?=inputYearSelect?> </td>
+                  <? for(var i=1; i <= 4; i ++ ) { ?>
+                    <td><?=i + word['QUARTER']?></td>
+                  <?}?>
+                  <td><?=word['SUM']?></td>
+                </tr>
+                <?
+                // 해당년도 각 분기별 사람 및 카드 저장
+                // var emps = convertStr2Obj(getScriptProperty("EMPLOYEES")).sort(); // 사원이름
+                var emps = empLoadAll;
+                var listByYear = getReportByQuarter;
+                check(listByYear);
+                var quartersInTable = new Array(); // 1~4분기 string저장                
+                var resultDic = {}; 
+                /* 
+                 * Dictionary 형으로 
+                 * key는 '0000년도 0분기 이름'으로 하며 
+                 * value는 [해당년도의 분기에 칭찬카드 작성 갯수][해당년도의 분기에 칭찬카드 받은 갯수] 로 한다.
+                */
+                
+                if(inputYearSelect != null) {
+                  // 1~4분기 string저장
+                  for(var i = 0; i < 4; i ++) {
+                    quartersInTable.push((i+1)+periods[0][1]);
+                  }
+                  
+                  // 쿼리를 통해 가져온 정보를 사전형으로 저장
+                  for(var i = 0; i < listByYear.length; i ++) {                    
+                    if(listByYear[i][0].split(" ")[0] == inputYearSelect) {
+                      resultDic[listByYear[i][0] + " " + listByYear[i][1]] = [[listByYear[i][2],listByYear[i][3]]];
+                    }
+                  }
+                
+                  // 사전형으로 해당 년도와 분기에 맞게 화면에 뿌림
+                  for(var i = 0; i < emps.length; i ++) { 
+                       var key; 
+                       var totalValues = 0; 
+                       if(i % 2 == 0) { ?>
+                         <tr class="active">
+                    <? } else { ?>
+                         <tr class="">
+                    <? } ?>
+                         <td rowspan="2" style="padding-top: 25px"><?=emps[i]?></td>
+                         <td><?=word['REC_SEND']?></td>
+                    <? for(var j = 0; j < quartersInTable.length; j ++) {
+                         key = inputYearSelect + " " + quartersInTable[j] + " " + emps[i]; ?>
+                         <? if(resultDic[key] == null) { ?>
+                           <td><span>-</span></td>
+                      <? } else {
+                           if(resultDic[key][0][0] != null) {                              
+                             if(parseInt(resultDic[key][0][0]) == 0) { ?>
+                               <td><span>-</span></td>
+                          <? } else { 
+                              totalValues += parseInt(resultDic[key][0][0]); ?>
+                             <td><?=resultDic[key][0][0]?></td>
+                          <? } ?>
+                        <? } else { ?>
+                            <td><span>-</span></td>
+                        <? } ?>
+                      <? } ?>
+                    <? } ?>
+                       <td><?=totalValues?></td>
+                       </tr>  
+                   <? if(i % 2 == 0) { ?>
+                     <tr class="active">
+                   <? } else { ?>
+                     <tr class="">
+                   <? } ?>
+                       <td><?=word['REC_RECV']?></td>
+                   <? totalValues = 0;                   
+                      for(var j = 0; j < quartersInTable.length; j ++) {
+                         key = inputYearSelect + " " + quartersInTable[j] + " " + emps[i]; ?>
+                         <? if(resultDic[key] == null) { ?>
+                           <td><span>-</span></td>
+                      <? } else { 
+                           if(resultDic[key][0][1] != null) {  
+                             if(parseInt(resultDic[key][0][1]) != 0) { 
+                               totalValues += parseInt(resultDic[key][0][1]); ?>
+                             <td><?=resultDic[key][0][1]?></td>
+                          <? } else { ?>
+                              <td><span>-</span></td>
+                          <? } ?>
+                        <? } else { ?>
+                            <td><span>-</span></td>
+                        <? } ?>
+                      <? } ?>
+                    <? } ?>
+                       <td><?=totalValues?></td>
+                       </tr>
+                  <? } ?>
+              <? } ?>                
+              </table>
+          </div>
+      
+      </div>
+      <!-- dispaly section end -->
+      
+      <script>
+        $('.dropdown-menu a.periods-item').click(function() {
+           $("#periodSelect").text($(this).text());
+           $("#inputYearSelect").val($(this).text());
+           console.log($("#inputYearSelect").val());
+
+        });       
+      </script>
+  </div>
+  <!-- container end -->
+  </body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="kr">
+  <head>
+  <base target="_top">
+  <title>작성한 카드</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.kr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+    <script>
+        $(document).ready(function() {     
+          $('.nav > li').removeClass('active');
+          $('#menu_enrolled_card').addClass('active');
+          
+          $(window).resize(function() {
+            $("#resolution").html("해상도: " + $(document).width() + " x " + $(document).height());
+          }).resize(); 
+        });
+     </script>
+  </head>
+  <body>
+  <?!= include('PC_Menu'); ?>
+  <div class="container">
+      <!-- 조회 조건 바 start -->
+      <form id="inquiryForm" class="form-horizontal" method="post" action="<?=getScriptProperty("WEB_ROOT_URL")?>?page=PC_EnrolledCard"> 
+          <input type="hidden" id="inputPeriodSelect" name="inputPeriodSelect" value="<?=currentQuarter?>"/>
+          
+          <div class="form-group">
+              <div class="col-xs-3 col-sm-2 col-md-2 afterClosing" id="afterClosing">
+                  <div class="btn-group btn-group-justified">
+                      <div class="btn-group">
+                          <!-- [20170913] [유현상] X-Frame-Options 버그 때문에 button을 a로 수정 -->
+                          <!--<button type="button" class="btn btn-info" aria-expanded="false" id="enrollBtn"><?=word['ENROLL']?></button>-->
+                          <a class="btn btn-info" href="<?=getScriptProperty("WEB_ROOT_URL")?>?page=PC_EnrollCard&cmd=new&inputPeriodSelect=<?=currentQuarter?>"><?=word['ENROLL']?></a>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-xs-9 col-sm-4 col-md-3">
+                  <div class="btn-group">
+                      <button type="button" class="btn btn-default dropdown-toggle periodSelect" data-toggle="dropdown" aria-expanded="false">
+                      <span id="periodSelect"><?=currentQuarter?></span>
+                      <span class="glyphicon glyphicon-chevron-down"></span></button>
+                      <ul class="dropdown-menu" role="menu">
+                            <? var periods = quarterList; ?>
+                            <?
+                            for(var i = 1; i < periods.length; i ++) {
+                            ?>
+                              <li>
+                                <a class='periods-item'><?=periods[i][0] + periods[0][0] + " " + periods[i][1] + periods[0][1]?></a>
+                              </li>
+                            <?
+                            }
+                            ?>
+                      </ul>
+                  </div>
+                  <div class="btn-group">
+                      <button type="button" class="btn btn-info btn-group-justified" aria-expanded="false" onclick="javascript:$('#inquiryForm').submit(); return false;"><?=word['INQUIRY']?></button>
+                  </div>
+              </div>
+          </div>
+          <!-- form-group -->
+      </form>
+      <!-- 조회 조건 바 end -->
+      <!-- dispaly section start -->
+      <div class="row">
+          <? 	var writtenList = getCardsIWrite;
+                //var writtenList = getCardsWritten(); ?>
+              <? for (var i = 0; i < writtenList.length; i ++) {
+                  if(i > 0 && i % 3 == 0) { ?>
+                  
+      </div>
+      <div class="row">
+          <?		} ?>
+          <div class="col-xs-12 col-sm-6 col-md-4" id='card-<?=writtenList[i][0]?>'>
+              <ul class="list-group" id='item-<?=writtenList[i][0]?>'>              
+                  <li class="list-group-item list-group-item-success">
+                    <?=writtenList[i][1]?>
+                  </li>
+                  <!-- 내용 -->
+                  <li class="list-group-item">
+                    <p class="list-group-item-text" style="white-space: pre-wrap"><?=writtenList[i][2]?></p>
+                  </li>
+                  <li class="list-group-item afterClosing">
+                    <div class="btn-group btn-group-justified">    
+                        <a href="<?=getScriptProperty("WEB_ROOT_URL")?>?page=PC_EnrollCard&cmd=update&seq=<?=writtenList[i][0]?>&inputPeriodSelect=<?=currentQuarter?>" class="btn btn-default edit"> 
+                          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span><?=word['MODIFY']?>
+                        </a>
+                        <a class="btn btn-default delete" id='seq-<?=writtenList[i][0]?>'> 
+                          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span><?=word['DELETE']?>
+                        </a>
+                    </div>
+                  </li>
+              </ul>
+          </div>
+          <?	} ?>
+      </div>
+      <!-- dispaly section end -->
+  </div>
+  <!-- container end -->
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" role="dialog">
+      <form id="deleteForm" onsubmit="var ret=deleteFormSubmit(this); return ret;">
+          <input type="hidden" id='delete_seq' name='delete_seq' value=""/>
+          <input type="hidden" id='currQuarter' name='currQuarter' value='<?=currentQuarter?>' />
+          <div class="modal-dialog modal-sm">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title"><?=message[0]?></h4>
+                  </div>
+                  <div class="modal-body">
+                  </div>
+                  <div class="modal-footer">
+                      <button type="submit" class="btn btn-default"><?=word['YES']?></button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal"><?=word['NO']?></button>
+                  </div>
+                  <div id="status">
+                      상태
+                  </div>
+              </div>
+          </div>
+      </form>
+  </div>
+  
+  <!-- 마감 후 수정/삭제 X -->
+  <?if(isClosed.equals('Y')) {?>
+    <script>
+      $(".afterClosing").css("display", "none");
+      
+    </script>
+  <?} else {?>
+    <script>
+      $(".afterClosing").css("display", "");
+    </script>
+  <?}?>
+  
+  
+  <script>
+        $('.dropdown-menu a.periods-item').click(function() {
+          $("#periodSelect").text($(this).text());
+          $("#inputPeriodSelect").val($(this).text());
+          console.log($("#inputPeriodSelect").val());
+          
+          // 분기 마감 후 등록 버튼 클릭 X
+          var getClosedQuartersList = <?=closedQuarters?>;          
+          var eachClosedQuarter = getClosedQuartersList.split(',');
+          for(var i=0; i < eachClosedQuarter.length; i ++ ) { 
+            if( eachClosedQuarter[i] == $("#inputPeriodSelect").val() ) {
+              $("#afterClosing").css("display", "none");
+              break;
+            }
+            else {            
+              $("#afterClosing").css("display", "");
+            }
+          }
+        });
+        
+        function deleteFormSubmit(formObject) {
+            var div = document.getElementById('status');
+            google.script.run.withSuccessHandler(updateUrl).deleteCard(formObject);
+            div.innerHTML = div.innerHTML + "<div class='alert alert-info'><strong><?=message[3]?></strong></div>";
+            return false;
+        }
+        
+        function updateUrl(result) {
+          var div = document.getElementById('status');
+          $('#card-'+delete_seq).remove();
+          div.innerHTML = result;
+          setTimeout(function() {
+            $("#deleteModal").modal('hide');
+          }, 1000);
+        }
+        
+        var delete_seq;
+        $('.delete').click(function(event) {
+          var id = $(this).attr('id').split('-');
+          delete_seq = id[1];
+          $('#delete_seq').attr('value', id[1]);
+          // console.log('deleteClick 후 '+$('#inputPeriodSelect').val());
+          $('#currQuarter').attr('value', $('#inputPeriodSelect').val());
+          $('.modal-body').empty();
+          $('#item-' + id[1]).clone().appendTo('.modal-body');
+          $('#status').text('');
+          $("#deleteModal").modal();
+          //$('#card-'+id[1]).remove();
+        });
+        
+        /* currentQuarter 가져오기 */
+        $("#enrollBtn").click (function () {
+          var currentPeriod = $("#inputPeriodSelect").val();
+          console.log(currentPeriod);
+          location.href= "<?=getScriptProperty("WEB_ROOT_URL")?>?page=PC_EnrollCard&cmd=new&inputPeriodSelect="+currentPeriod;          
+        });
+      </script>
+  </body>
+</html>
