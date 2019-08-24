@@ -19,22 +19,22 @@ CLOSED_TABLE      | ? (보안상 숨김)
 
 
 Source Name             | Description
--------------------------------------------------------------------------
-| 코드.gs	                |	웹 전체 	|
-| PC_Menu.html	          | 메뉴 페이지|	                         
-| PC_EnrollCard.html	    | 작성 > 등록 페이지	                   |
-| PC_EnrolledCard.html    |	작성 > 내가 작성한 카드 조회 페이지|
-| PC_PraiseInquiry.html	  | 조회 페이지|
-| PC_Monitoring.html	    | 진행 현황 페이지|
-| PC_ReportByYear.html	  | 통계 > 년도별 페이지		|
-| PC_ReportByEmp.html	    | 통계 > 직원별 페이지	|	
-| GS_PraiseInquiry.gs		  | 조회 페이지 관련 메소드 모음	|
-| GS_EnrollCard.gs	      | 작성 페이지 관련 메소드 모음	|
-| InfoFromSpreadSheet.gs  |	"스프레드시트 가져오기 및 삽입 (분기처리만)"|
-| GS_Monitoring.gs	      | 진행 현황 페이지 관련 메소드 모음	|
-| GS_ReportByEmp.gs 		  | 통계 페이지 관련 메소드 모음|
-| GS_ReportByYear.gs      | 통계 페이지 관련 메소드 모음|
-| queries.gs		          | 데이터베이스 쿼리 모음	|
--------------------------------------------------------------------------
+     ---- | ----
+ 코드.gs	                |	웹 전체 	
+ PC_Menu.html	          | 메뉴 페이지       
+ PC_EnrollCard.html	    | 작성 > 등록 페이지	                
+ PC_EnrolledCard.html    |	작성 > 내가 작성한 카드 조회 페이지
+ PC_PraiseInquiry.html	  | 조회 페이지
+ PC_Monitoring.html	    | 진행 현황 페이지
+ PC_ReportByYear.html	  | 통계 > 년도별 페이지		
+ PC_ReportByEmp.html	    | 통계 > 직원별 페이지	
+ GS_PraiseInquiry.gs		  | 조회 페이지 관련 메소드 모음	
+ GS_EnrollCard.gs	      | 작성 페이지 관련 메소드 모음	
+ InfoFromSpreadSheet.gs  |	"스프레드시트 가져오기 및 삽입 (분기처리만)"
+ GS_Monitoring.gs	      | 진행 현황 페이지 관련 메소드 모음	
+ GS_ReportByEmp.gs 		  | 통계 페이지 관련 메소드 모음
+ GS_ReportByYear.gs      | 통계 페이지 관련 메소드 모음
+ queries.gs		          | 데이터베이스 쿼리 모음	
+
 
 
