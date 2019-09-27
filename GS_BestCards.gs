@@ -10,7 +10,7 @@ function getBestCards_() {
   queryString += " 	        SELECT  QUARTER, MAX(EVALUATION) AS EVALUATION                                                                           ";
   queryString += "            FROM (                                                                                                                 ";
   queryString += "                   SELECT p.quarter AS QUARTER, SUM(c.evaluation) AS EVALUATION                                                    ";
-  queryString += "                     FROM card_check c, praise_card p                                                                              ";
+  queryString += "                     FROM c, p                                                                              ";
   queryString += "                    WHERE c.evaluation > 0                                                                                         ";
   queryString += "                      AND c.seq = p.seq                                                                                            ";
   queryString += "                    GROUP BY p.quarter,c.seq                                                                                       ";
@@ -19,7 +19,7 @@ function getBestCards_() {
   queryString += "        ) A,                                                                                                                       ";
   queryString += "        (                                                                                                                          ";
   queryString += "          SELECT p.seq AS SEQ, p.quarter AS QUARTER, p.receiver AS RECEIVER, p.content AS CONTENT, SUM(c.evaluation) AS EVALUATION ";
-  queryString += "            FROM card_check c, praise_card p                                                                                       ";
+  queryString += "            FROM c, p                                                                                       ";
   queryString += "           WHERE c.evaluation > 0                                                                                                  ";
   queryString += "             AND c.seq = p.seq                                                                                                     ";
   queryString += "           GROUP BY p.quarter,c.seq                                                                                                ";
