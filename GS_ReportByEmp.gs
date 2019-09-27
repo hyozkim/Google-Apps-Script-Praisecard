@@ -6,8 +6,8 @@ function getReceiverByQuarter_() {
   isInsideOfLogic = true;
   
   var queryStr = "";
-  queryStr += " SELECT quarter, send_dt, sender, receiver, content   ";
-  queryStr += "     FROM praise_card                                 ";
+  queryStr += " SELECT p.quarter, p.send_dt, p.sender, p.receiver, p.content   ";
+  queryStr += "     FROM p                                 ";
   queryStr += "         WHERE quarter=? AND receiver=?               ";    
    
   
