@@ -9,11 +9,11 @@ function getReportAll_(year) {
   queryStr += "SELECT left(a.quarter,6) , a.name_kor as name_kor, sum(sendCnt) AS sendCnt, sum(recvCnt) AS recvCnt      ";
   queryStr += "       FROM (                                                                                            "; 
   queryStr += "             SELECT quarter, sender AS name_kor, count(*) AS sendCnt, 0 AS recvCnt                       ";
-  queryStr += "                   FROM praise_card p                                                                    ";
+  queryStr += "                   FROM p                                                                    ";
   queryStr += "                       GROUP BY sender, quarter                                                          ";
   queryStr += "       UNION ALL                                                                                         ";
   queryStr += "             SELECT quarter, receiver AS name_kor, 0 AS sendCnt, count(*) AS recvCnt                     ";
-  queryStr += "                   FROM praise_card p                                                                    ";
+  queryStr += "                   FROM p                                                                    ";
   queryStr += "                         GROUP BY receiver, quarter                                                      ";
   queryStr += "            ) a, emp e where a.name_kor = e.name_kor and e.work_sts=1                                    ";
   queryStr += " GROUP BY a.name_kor, left(a.quarter,6)                                                                  ";
