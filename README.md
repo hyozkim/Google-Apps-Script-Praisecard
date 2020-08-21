@@ -32,42 +32,42 @@ Google Apps Script를 활용한 사내 칭찬카드 웹 개발
 |MESSAGE           | [ "선택한 카드를 삭제할까요?", "등록 요청 후 결과 대기중", "수정 요청 후 결과 대기중", "삭제 요청 후 결과 대기중"] |
 |EMPLOYEES         | ["홍길동", "이순신"]|
 |MANAGERS          | ["abc@abc.com",abd@abd.com]|
-|PRAISE_CARD_TABLE | ? (보안상 숨김)|
-|CARD_CHECK_TABLE  |  ? (보안상 숨김)|
-|EMP_TABLE         | ? (보안상 숨김)|
-|CLOSED_TABLE      | ? (보안상 숨김)|
+|PRAISE_CARD_TABLE | (confidential) |
+|CARD_CHECK_TABLE  | (confidential) |
+|EMP_TABLE         | (confidential) |
+|CLOSED_TABLE      | (confidential) |
 
 ---------------------------------------------------------------
 
 칭찬카드 작성 페이지
-![EnrollCard](./2.0_작성_등록.JPG)
+![EnrollCard](./image/2.0_작성_등록.JPG)
 
 ---------------------------------------------------------------
 칭찬카드 내가 작성한 카드 목록 페이지
-![EnrolledCard](./2.0_작성_목록.JPG)
+![EnrolledCard](./image/2.0_작성_목록.JPG)
 
 ---------------------------------------------------------------
 칭찬카드 조회 전체카드 페이지
-![PraiseInquiry](./2.0_조회_전체카드.JPG)
+![PraiseInquiry](./image/2.0_조회_전체카드.JPG)
 
 ---------------------------------------------------------------
 칭찬카드 조회 추천카드 페이지
-![PraiseRecommanded](./2.0_조회_추천카드.JPG)
+![PraiseRecommanded](./image/2.0_조회_추천카드.JPG)
 
 ---------------------------------------------------------------
 칭찬카드 진행현황 페이지
-![Monitoring](./2.0_진행현황.JPG)
+![Monitoring](./image/2.0_진행현황.JPG)
 
 ---------------------------------------------------------------
 칭찬카드 우수칭찬카드 페이지
-![BestCards](./2.0_우수칭찬카드.JPG)
+![BestCards](./image/2.0_우수칭찬카드.JPG)
 
 ---------------------------------------------------------------
 칭찬카드 통계 연도별 페이지
-![ReportByYear](./2.0_통계_년도별.JPG)
+![ReportByYear](./image/2.0_통계_년도별.JPG)
 
 ---------------------------------------------------------------
 칭찬카드 통계 직원별 페이지
-![ReportByEmp](./2.0_통계_직원별.JPG)
+![ReportByEmp](./image/2.0_통계_직원별.JPG)
 
 
