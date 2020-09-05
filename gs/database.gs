@@ -1,10 +1,10 @@
-var address = ''; // DB, Google Cloud SQL IP
-var db = '';
-var user = '';
-var userPwd = '';
-var dbUrl = 'jdbc:mysql://' + address + '/' + db;
+const ADDRESS = ''; // DB, Google Cloud SQL IP
+const DB = '';
+const USER = '';
+const USERPWD = '';
+const DBURL = 'jdbc:mysql://' + ADDRESS + '/' + DB;
 
-var DbConnection = function(){
+var DbConnection = function() {
   var module = {};
   
   var connection = null;
@@ -14,7 +14,7 @@ var DbConnection = function(){
   var _connect = function() {
     if(!this.isConn()) {
       try{
-        connection = Jdbc.getConnection(dbUrl, user, userPwd);
+        connection = Jdbc.getConnection(DBURL, USER, USERPWD);
         Logger.info("DB Status : " + (this.isConn() ? "on" : "off"));
       } catch(exception) {
           Logger.info("_connect Error : " + exception);

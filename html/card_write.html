@@ -1,0 +1,203 @@
+<!DOCTYPE html> 
+<html lang="kr"> 
+  <head> 
+    <base target = "_top"> 
+    <title>칭찬카드 작성</title>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.kr.min.js"></script>
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css" rel="stylesheet">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+     
+     <script>
+        $(document).ready(function() {
+            $('.nav > li').removeClass('active');
+            $('#menu_enrolled_card').addClass('active');
+        
+            $(window).resize(function() {
+              $("#resolution").html("해상도: " + $(document).width() + " x " + $(document).height());
+            }).resize();  
+          
+            // 입력 값을 초기화(cmd가 new 일떄도 getCardOnlyOneClicked에 초기화된 값이 넘어옴
+            $('#whoPraised').val(<?=selectedCard[0][0]?>);
+            $('#cardContent').val(<?=selectedCard[0][1]?>);
+            
+            $("#closeBtn").click(function() {
+              $('#enCard').attr('disabled',false);
+              $('#listBtn').attr('disabled',false);
+              isClicked = true;
+            });
+        });
+     </script>
+     
+     <style>
+     #noticeHeader {
+       font-weight: 900;
+       font-size: 20px;
+     }
+     </style>
+     
+  </head> 
+  <body> 
+    <?!= include('menu'); ?>
+    <!-- container start -->
+      
+    <div class="container">
+      <div style="text-align: center;">
+        <div style="margin-bottom: 20px;">
+          <span id="noticeHeader">작성 유의사항</span>
+        </div>
+        <span>
+          칭찬카드는 무엇 때문에 칭찬을 받는지, 미담 사례를 구체적으로 작성해주세요. <br/>
+          분기별로 가장 많이 칭찬을 받은 카드를 상단 "우수 칭찬카드" 메뉴에서 확인할 수 있으니, 작성시 참조해주세요.<br/>
+          <span style="color: blue;">※미담(美談): 사람을 감동시킬 만큼 아름다운 내용을 가진 이야기.</span>
+        </span>
+      </div>
+      <hr>
+      
+      <form id="enrollForm" class="form-horizontal" method="post" action="<?=getScriptProperty("WEB_ROOT_URL")?>?page=card_written">    
+      <input type="hidden" id="inputPeriodSelect" name="inputPeriodSelect" value="<?=currentQuarter?>"/> <!-- insert -->
+      <input type="hidden" id="currentSeq" name="currentSeq" value="<?=seq?>"/> <!-- update -->
+      <input type="text" style="width 0px; visibility: hidden;">
+      
+      <script>console.log("[card_write] currentQuarter = " + <?=currentQuarter?>);</script>
+      
+      <!-- 칭찬받는 사람 start -->
+      <div class="form-group">
+          <label class="control-label col-xs-12 col-sm-2 col-md-2"><?=word['RECEIVER']?>:</label> 
+          <div class="col-body col-xs-12 col-sm-2 col-md-2">
+            <input type="text" class="form-control" id="whoPraised" name="whoPraised" placeholder="<?=word['NAME']?>">
+          </div>
+      </div>
+      <!-- 칭찬받는 사람 end -->
+      
+      <!-- 칭찬 내용 start -->
+      <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2 col-md-2"><?=word['PRAISE_CONTENT']?>:</label>
+        <div class="col-body col-xs-12 col-sm-10 col-sm-10">
+          <textarea class="form-control" rows="15" id="cardContent" name="cardContent" placeholder="<?=errorCode[8]?>"></textarea>
+        </div>
+      </div>  
+      <!-- 칭찬 내용 end -->
+      
+      <div class="form-group">
+        <div class="col-xs-12 col-sm-offset-2 col-sm-10 col-md-offset-2 col-md-10">
+          <div id="status"></div>
+        </div>
+        <div class="col-xs-12 col-sm-offset-2 col-sm-4 col-md-offset-2 col-md-4">
+          <!-- button section start -->
+          <div class="btn-group btn-group-justified">
+           <a class="btn btn-default" id="enCard"><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span><?=word['SAVE']?></a>
+           <a class="btn btn-default" id="listBtn" href="<?=getScriptProperty("WEB_ROOT_URL")?>?page=card_written"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><?=word['LIST']?></a>
+          </div>
+        </div>
+      </div>
+      <!-- button section end -->
+      </form>
+    </div> 
+    <!-- container end -->
+    
+    <!-- modal section start -->
+    <div class="modal fade" id="warningModal" role="dialog">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><?=errorCode[5]?></h4>
+          </div>
+          <div class="modal-body">
+            <div id='ad1' class='alert alert-danger'><strong><?=errorCode[6]?></strong></div>
+            <div id='ad2' class='alert alert-danger'><strong><?=errorCode[8]?></strong></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="closeBtn">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal section end -->
+    
+    <script>
+      var isClicked = true;
+            
+      // 등록 버튼을 클릭했을 시      
+      $('#enCard').click(function() { 
+        // console.log("1");
+        if ($("#whoPraised").val() == <?=getUserProperty("name_kor")?>) {
+          $("#status").html("<div class='alert alert-danger'><strong><?=errorCode[7]?></strong></div>");
+          console.log("2");
+        } else {
+          if(isClicked) {
+            console.log("3");
+            if(!handleFormSubmit($('#enrollForm')[0])) {
+              console.log("4");
+              isClicked = false;
+            }            
+          }
+          console.log("5");
+          $('#enCard').attr('disabled',true);
+          $('#listBtn').attr('disabled',true);
+          console.log("6");
+        }
+      });  
+      
+      function handleFormSubmit(formObject) {
+          console.log(formObject.whoPraised.value);
+          console.log(formObject.cardContent.value);
+          
+          $('#ad1').hide();
+          $('#ad2').hide();
+          
+          var warning = false;
+          if ($('#whoPraised').val().length == 0) {
+            $('#ad1').show();
+            warning = true;
+          }
+          
+          if ($('#cardContent').val().length == 0) {
+            $('#ad2').show();
+            warning = true;
+          }
+          
+          if (warning) {
+            $("#warningModal").modal();
+            return false;
+          }
+          
+          var div = document.getElementById('status');
+          if (<?=cmd?> == 'new') {
+            google.script.run.withSuccessHandler(updateUrl).insertCard(formObject);
+            div.innerHTML = "<div class='alert alert-info'><strong><?=message[1]?></strong></div>"; 
+          }
+          if (<?=cmd?> == 'update') {
+            google.script.run.withSuccessHandler(updateUrl).updateCard(formObject);
+            div.innerHTML = "<div class='alert alert-info'><strong><?=message[2]?></strong></div>";
+          }
+          
+         return false;
+       }
+       
+       function updateUrl(result) {
+        var div = document.getElementById('status');
+
+        div.innerHTML = result;
+        
+        $('#enCard').attr('disabled',false);
+        $('#listBtn').attr('disabled',false);
+        
+        isClicked = true; 
+        if(result == "<div class='alert alert-success'><strong>1건 저장 성공!</strong> 목록페이지로 이동중입니다.</div>") {
+          $('#enrollForm').submit();
+        }
+      }    
+      
+    </script>
+    
+  </body> 
+</html>

@@ -147,75 +147,9 @@ function getTime(isDebug) {
   return hh+':'+mm+':'+ss;
 }
 
-
-// DBconnect > Connect
-function getDBConn_() {
-  var returnStr = "";
-  if(conn == null) {
-    if(!isInsideOfLogic) {
-      conn = Jdbc.getConnection(dbUrl, user, userPwd);
-      returnStr += "[DB Connected (init)]";
-    }
-  } else {
-    if(conn.isClosed()) {
-      if(!isInsideOfLogic) {
-        conn = Jdbc.getConnection(dbUrl, user, userPwd);
-        returnStr += "[DB Connected]";
-      }
-    } else {
-      returnStr += "[DB Already Connected]";
-    }
-  }
-  Logger.info(returnStr);
-}
-
-// DBconnect > Close
-function closeDBConn_() {
-  var returnStr = "";
-  if(!conn.isClosed()) {
-    if(!isInsideOfLogic) {
-      conn.close();
-      returnStr += "[DB Closed]";
-    }
-  } else {
-    returnStr += "[DB Already Closed]";
-  }
-  Logger.info(returnStr);
-}
-
-function loadEmp_() {
-  Logger.log("<<<<<<<<<< loadEmp() START >>>>>>>>>>");
-  var start = new Date();
-  getDBConn();
-  var stmt = conn.prepareStatement(loadEmpQuery);
-  stmt.setMaxRows(100);
-  stmt.setString(1, Session.getActiveUser().getEmail());
-  var results = stmt.executeQuery();
-  var numCols = results.getMetaData().getColumnCount();
-  var row = {}; // new Object()와 동일한 문법
-  
-  while (results.next()) {
-    for (var col = 1; col <= numCols; col++) {
-      // 자바의 해쉬맵처럼 사용할 수 있음.
-      row[results.getMetaData().getColumnName(col)] = results.getString(col);
-    }
-  }
-  results.close();
-  stmt.close();
-  closeDBConn();
-
-  var userProperties = PropertiesService.getUserProperties();
-  // 유저 프로퍼티의 모든 값을 삭제
-  userProperties.deleteAllProperties();
-  // 테이블의 emp 정보를 유저 프로퍼티에 저장
-  userProperties.setProperties(row);
-  
-  var keys = userProperties.getKeys();
-  for (var i = 0; i < keys.length; i++) {
-    Logger.log("  - " + keys[i] + "=" + userProperties.getProperty(keys[i]));
-  }
-  
-  var end = new Date();
-  Logger.log("<<<<<<<<<< loadEmp() END %s ms >>>>>>>>>>", end - start);
-  return row;
+// property에 저장되어있는 string을 jason 형식의 object로 변환
+function convertStr2Obj(property) {
+  var result = property.toString();
+  result = JSON.parse(result);
+  return result;
 }

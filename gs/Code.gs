@@ -1,18 +1,7 @@
-// property에 저장되어있는 string을 jason 형식의 object로 변환
-function convertStr2Obj(property) {
-  var result = property.toString();
-  result = JSON.parse(result);
-  return result;
-}
-
 function init() {
   // 유저 프로퍼티에 이름이 없으면 emp 테이블에서 Google Session의 이메일 주소로 검색하여 유저 프로퍼티에 저장 합니다.
   if(getUserProperty("name_kor") == null || getUserProperty("email") == null) {
-    // loadEmp();
     Logger.log("<<<<<<<<<< LoadEmp() Start >>>>>>>>>>");
-    
-    // empInfo = db.exe("S", loadEmpQuery, [Session.getActiveUser().getEmail()], 4);
-    // empInfo = makeHashMapForm ( db.exe("S", loadEmpQuery, [Session.getActiveUser().getEmail()]) );
     empInfo = makeHashMapForm ( db.exe("S", loadEmpQuery, [Session.getActiveUser().getEmail()]), db.exe( "C", loadEmpQuery, [Session.getActiveUser().getEmail()]));
     
     var userProperties = PropertiesService.getUserProperties();
@@ -21,12 +10,6 @@ function init() {
     // 테이블의 emp 정보를 유저 프로퍼티에 저장
     userProperties.setProperties(empInfo);
     
-    /*
-    var keys = userProperties.getKeys();
-    for (var i = 0; i < keys.length; i++) {
-      Logger.log("  - " + keys[i] + "=" + userProperties.getProperty(keys[i]));
-    }
-    */
     Logger.log("<<<<<<<<<< LoadEmp() End >>>>>>>>>>");
   }
   
@@ -45,7 +28,7 @@ function init() {
   
   // 디폴트 페이지 설정
   if(page == null) {
-    page = "PC_PraiseInquiry"; // default page 안 읽은 칭찬카드 // 관리자
+    page = "card_inquiry"; // default page 안 읽은 칭찬카드 // 관리자
   }
   
   // 에러코드 설정
@@ -83,7 +66,7 @@ function doGet(request) {
     init();
   
     // 보류 지울지 말지 언제 쓰일지
-    if(page == 'PC_EnrollCard' || page == 'PC_EnrolledCard') {
+    if(page == 'card_write' || page == 'card_written') {
       if(message == null) {
         message = convertStr2Obj(getScriptProperty("MESSAGE"));
       }
@@ -103,7 +86,7 @@ function doGet(request) {
     }
     
     
-    if(page != 'PC_EnrollCard') {
+    if(page != 'card_write') {
       /* ---------------------------------------------------------------
            ##                        조회 페이지                        ##
          --------------------------------------------------------------- */
@@ -121,12 +104,12 @@ function doGet(request) {
         currentCnt     = 5; // 관리자만
         currentQuarter = quarterList[quarterList.length-1][0] + quarterList[0][0] + " " + quarterList[quarterList.length-1][1] + quarterList[0][1];
         
-        if(page == 'PC_ReportByEmp') {
+        if(page == 'report_emp') {
           currentQuarter ='년도 분기';
         }
       }
       
-      if(page == 'PC_PraiseInquiry') {
+      if(page == 'card_inquiry') {
         var pageId;
         var sql = [notReadPageQuery, recPageQuery, allPageQuery, givenPageQuery];
                 
@@ -159,7 +142,7 @@ function doGet(request) {
       totalCnt    = totalcntNClose[0][2]; // 전체카드 수
          
       
-      if(page == 'PC_Monitoring' || page == 'PC_EnrolledCard') {
+      if(page == 'vote_monitor' || page == 'card_written') {
         // 공통 
         var closedDic = makeDicForm( db.exe("S", getEveryIsClosedQuery), 0, [1,2] );
         
@@ -177,7 +160,7 @@ function doGet(request) {
          /* ---------------------------------------------------------------
               ##                      작성 페이지 목록                    ##
             --------------------------------------------------------------- */
-        if(page == 'PC_EnrolledCard') {
+        if(page == 'card_written') {
           // 내가 작성한 카드 목록 가져오기
           getCardsIWrite = db.exe("S", getCardsIWriteQuery, [getUserProperty("name_kor"), currentQuarter]);
         }
@@ -185,7 +168,7 @@ function doGet(request) {
          /* ---------------------------------------------------------------
               ##                       진행 현황                         ##
             --------------------------------------------------------------- */
-        if(page == 'PC_Monitoring') {
+        if(page == 'vote_monitor') {
           // 현재 진행 상황 데이터 가져오기
           getCurrentSituation = db.exe("S", selectProgressMonitoringQuery, [currentQuarter, totalCnt, currentQuarter]);
                   
@@ -218,25 +201,25 @@ function doGet(request) {
       /* ---------------------------------------------------------------
            ##                      우수 칭찬 카드                       ##
          --------------------------------------------------------------- */
-      if(page == 'PC_BestCards') {
+      if(page == 'card_best') {
         getBestCards = db.exe("S", getBestCardsQuery);
       }
       
       /* ---------------------------------------------------------------
            ##         통계(년도별) 페이지  & 통계(직원별) 페이지          ##
          --------------------------------------------------------------- */
-      if(page == 'PC_ReportByYear' || page == 'PC_ReportByEmp' || page == 'PC_ReportAll') {
+      if(page == 'report_emp' || page == 'report_year' || page == 'report_all') {
         empLoadAll = db.exe("S", loadWholeEmpNameQuery);
         
-        if( page == 'PC_ReportByYear' ) {
+        if( page == 'report_year' ) {
           if(inputYearSelect == null ) {
             inputYearSelect = quarterList[quarterList.length-1][0] + quarterList[0][0];
           }
           
           getReportByQuarter = db.exe("S", getReportByQuarterQuery, [inputYearSelect,inputYearSelect]);
-        } else if( page == 'PC_ReportByEmp' ) {
+        } else if( page == 'report_emp' ) {
             getReceiverByQuarter = db.exe("S", getReceiverByQuarterQuery, [currentQuarter,selectedWorker]);
-        } else if ( page == 'PC_ReportAll' ) {
+        } else if ( page == 'report_all' ) {
             getReportAll = db.exe("S", getReportAllQuery);
         }
       }

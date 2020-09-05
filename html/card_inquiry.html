@@ -1,0 +1,479 @@
+<!DOCTYPE html> 
+<html lang="kr"> 
+  <head> 
+    <base target = "_top"> 
+    <title>칭찬카드 조회</title>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.kr.min.js"></script>
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css" rel="stylesheet">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+     
+     <script>
+         var hiddenTrigger = 0;
+         var isAgainClicked = false;
+          $(document).ready(function() {
+          $('.nav > li').removeClass('active');
+          $('#menu_praise_inquiry').addClass('active');
+        
+          $(window).resize(function() {
+             $("#resolution").html("해상도: " + $(document).width() + " x " + $(document).height());
+          }).resize();
+          
+          $("#resolution").click(function() {            
+            if(hiddenTrigger == 5) {
+              console.log(hiddenTrigger + ">>");
+              /*쿼리자리*/
+            }
+            if(!isAgainClicked) {
+              isAgainClicked = true;
+              setTimeout(function() {
+                hiddenTrigger = 0;
+                isAgainClicked = false;
+              }, 5000);
+            }
+            hiddenTrigger ++;
+          });
+        });
+        
+        
+        function toInitElements() {
+          console.log("init");
+          $(".everyElem").css("display", "none");
+        }
+        /*
+        notReadPage : 안 읽은 칭찬카드 페이지
+        recPage : 추천 칭찬카드 페이지                
+        allPage : 전체 칭찬카드 페이지                
+        givenPage : 받은 칭찬카드 페이지
+        afterClose : 마감 후
+        everyElem : 모든 값들 지정 (초기화를 위함)
+        */
+        //안읽은 칭찬카드 페이지
+        function toChangeElementsWhenNotReadPage() {
+          toInitElements();
+          $(".notReadPage").css("display", "");
+        }
+        // 추천 칭찬카드 페이지 일때
+        function toChangeElementsWhenRecPage() {
+          toInitElements();
+          $(".recPage").css("display", "");
+        }        
+        // 내가 받은 칭찬카드 페이지
+        function toChangeElementsWhenGivenPage() {
+          toInitElements();
+          $(".givenPage").css("display", "");
+        }
+        // 전체 칭찬카드 페이지
+        function toChangeElementsWhenAllPage() {
+          toInitElements();
+          $(".allPage").css("display", "");
+        }
+        // 마감 후
+        function toChangeElementsWhenAfterClose() {
+          toInitElements();
+          $(".afterClose").css("display", "");
+        }
+        function toHideSomeElementsWhenAfterClose() {
+          $(".recNRead").css("display", "none");
+        }
+
+     </script>
+     
+     <style>
+     .list-group-item>.badge {
+       float: none;
+     }
+     #noticeHeader {
+       font-weight: 900;
+       font-size: 20px;
+     }
+     </style>
+     
+  </head> 
+  <body> 
+    <?!= include('menu'); ?>    
+    <div class="container">
+    
+      <div class="everyElem notReadPage allPage" style="text-align: center; display:none;">
+        <div style="margin-bottom: 20px;">
+          <span id="noticeHeader">평가 방법</span>
+        </div>
+        <span>
+          평가는 5점 척도 입니다. 좋은 미담 사례를 위주로 높은 평가 부탁 드립니다. 평가 점수의 합이 높은 10개에 칭찬카드를 분기 모임시 현장 투표진행 합니다.<br/>
+          칭찬하는 내용이 이해가 가지 않거나, 성의가 없다고 생각하시면 5점 척도에서 가장 낮은 쪽의 점수를 선택해주세요.<br/>
+          본인이 작성한 카드는 본인을 제외한 전 직원이 5점 척도로 평가하여 본인에게만 피드백을 드릴테니, 다음 칭찬카드 작성시에 분발해주세요.<br/>
+          시험적으로 5점 척도를 사용합니다. 더 좋은 방안을 찾는 중이니 성실하게 평가해 주십시오.
+        </span>
+        <hr>
+      </div>
+    
+    <!-- 조회 조건 바 start -->
+    <form id="inquiryForm" class="form-horizontal" action="<?=getScriptProperty("WEB_ROOT_URL")?>?page=card_inquiry">
+      <!-- to deliver each inputs to js and query -->
+      <input type="hidden" id="inputCntSelect" name="inputCntSelect" value="<?=currentCnt?>"/>
+      <input type="hidden" id="inputPeriodSelect" name="inputPeriodSelect" value="<?=currentQuarter?>"/>
+      <input type="hidden" id="inputCardSelect" name="inputCardSelect" value="<?=currentCard?>"/>
+      <input type="hidden" id="inputIsClickToClose" name="inputIsClickToClose" value=""/>
+      
+      <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+          <? if(isManager) { ?>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <span id="cntSelect"><?=currentCnt?></span>
+                <span class="glyphicon glyphicon-chevron-down"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <? for(var i = 1; i <= 3; i ++) { ?>
+                  <li><a class='cnt-item'><?=i*5?></a></li>
+                <? } ?>
+                <li><a class='cnt-item'><?=totalCnt?></a></li>
+              </ul>          
+            </div>
+          <? } ?>
+          
+          <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle periodSelect" data-toggle="dropdown" aria-expanded="false">
+              <span id="periodSelect"><?=currentQuarter?></span>
+              <span class="glyphicon glyphicon-chevron-down"></span>
+            </button>
+            
+            <ul class="dropdown-menu" role="menu">
+              <? var periods = quarterList; ?>
+              <? for(var i = 1; i < periods.length; i ++) { ?>
+                <li><a class='periods-item'><?=periods[i][0] + periods[0][0] + " " + periods[i][1] + periods[0][1]?></a></li>
+              <? } ?>
+            </ul>
+          </div>
+          
+          <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle cardSelect" data-toggle="dropdown" aria-expanded="true">
+              <span id="cardSelect"><?=currentCard?></span>
+              <span class="glyphicon glyphicon-chevron-down"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <? var cardMenu = cardMenuList; ?>
+              <? for(var i = 0; i < cardMenu.length; i ++) { ?>
+                <li><a class='cardMenu-item'><?=cardMenu[i][0]?></a></li>
+              <? } ?>
+            </ul>
+          </div>
+          
+          <div class="btn-group">
+            <button type="button" class="btn btn-info" onclick="javascript:$('#inquiryForm').submit(); return false;"><?=word['INQUIRY']?></button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <!-- 조회 조건 바 end -->      
+    
+    <? //var cardList = selectCards(currentCard.toString());
+       var cardList = selectCards;
+     ?>
+    <? var cntForSearch = totalCnt; ?>
+    <!-- 관리자에게 받은 카드 수 랭킹 보여주는 화면 시작 (추천카드 페이지일 때)-->
+    <!-- 테스트 해보기 -->
+    <? if(isManager) { ?>
+      <? if(currentCard.toString().equals(cardMenu[1][0])) { ?>
+        <? var recedList = getTheNumberOfRecvCards; ?>
+        <? for(var i = recedList.length-1; i > 0; --i) { ?>
+          <? for(var j = 0; j < i; ++ j) { ?>
+            <? if(recedList[j][1] < recedList[j + 1][1]) { ?>
+              <? var temp = recedList[j]; ?>
+              <? recedList[j] = recedList[j + 1]; ?>
+              <? recedList[j + 1] = temp; ?>
+            <? } ?>
+          <? } ?>
+        <? } ?>        
+        <?if(recedList.length > 5) { ?>
+          <div class="col-xs-12 col-sm-12 col-md-12">
+            <table class="table table-bordered" style="text-align: center">
+              <tr>
+                <? for(var i = 0; i < 5; i ++) { ?>
+                  <td class="warning" rowspan=2><br/><?=i+1?></td>
+                  <td class="info"><?=recedList[i][0]?></td>
+                <? } ?>
+              </tr>
+              <tr>
+                <? for(var i = 0; i < 5; i ++) { ?>
+                  <td><?=recedList[i][1]?></td>
+                <? } ?>
+              </tr>
+            </table>
+          </div>
+        <? } ?>
+      <? } ?>
+    <? } ?>     
+    <!-- 관리자에게 받은 카드 수 랭킹 보여주는 화면 끝 -->
+    
+    <!-- dispaly section start -->
+    <? if(isManager || isClosed == 'Y') { ?>
+      <div class="row">
+        <? if(isManager) { ?>
+          <? cntForSearch = currentCnt; ?>
+          <? if(currentCnt > cardList.length) { ?>
+            <? cntForSearch = cardList.length; ?>
+          <? } ?>
+        <? } else { ?>
+          <? if(totalCnt > cardList.length) { ?>
+            <? cntForSearch = cardList.length; ?>
+          <? } ?>
+        <? } ?>
+        
+        <? for (var i = 0; i < cntForSearch; i ++) { ?>
+          <? var addStyle = (cardList[i][5] == 0) ? "list-group-item-info" : "list-group-item-success"; ?>
+          <? if(i > 0 && i % 3 == 0) { ?>
+            </div>
+            <div class="row">
+          <? } ?>
+            <form id="cardForm" class="form-horizontal" onsubmit="var ret = handleCardForm(this); return ret;">
+              <input type="hidden" id="card_seq" name="card_seq" value="" />
+              <input type="hidden" id="card_cmd" name="card_cmd" value="" />
+              <input type="hidden" id="card_eval" name="card_eval" value="" />
+              <input type="hidden" id="card_quarter" name="card_quarter" value="<?=currentQuarter?>"/>
+              
+              <div class="col-xs-12 col-sm-6 col-md-4" id='card-<?=cardList[i][6]?>'>
+                <ul class="list-group">
+                  <li class="list-group-item <?=addStyle?>">
+                  <!--
+                  notReadPage : 안 읽은 칭찬카드 페이지
+                  recPage : 추천 칭찬카드 페이지                
+                  allPage : 전체 칭찬카드 페이지                
+                  givenPage : 받은 칭찬카드 페이지
+                  afterClose : 마감 후
+                  everyElem : 모든 값들 지정 (초기화를 위함)
+                  
+                  0 : 보내는 사람 1 : 받는 사람 2 : 내용 3 : 읽은 날짜 4 : 읽은 시간 5 : 추천 수 6 : seq(KEY)
+                  -->
+                    <table border=0 style="width: 100%">
+                      <tr>
+                        <!-- 보여주는 Elements -->
+                        <!-- 오름차순 카운트 [마감 후 - 추천 칭찬카드]-->
+                        <td class="afterClose everyElem"><span class="badge cntAsc"><?=i+1?></span></td>                        
+                        <!-- 받는사람 [마감 전/후] -->
+                        <?if(cardList[i][1] != null) {?>
+                          <td class="notReadPage recPage allPage everyElem givenPage afterClose"><?=cardList[i][1]?></td>
+                        <?}?>
+                        <!-- '<-' 화살표 [마감 후] -->
+                        <? if(isManager) { ?>
+                          <td class="afterClose everyElem"><span class="glyphicon glyphicon-chevron-left"></span></td>
+                        <? } ?>
+                        <!-- 보낸 사람 [마감 후] -->
+                        <? if(cardList[i][0] != null) { ?>
+                          <? if(isManager) {?>
+                            <td class="afterClose everyElem"><?=cardList[i][0]?></td>
+                          <? } ?>
+                        <? } ?>
+                        <!-- 추천 수 [마감 전/후 - 추천 칭찬카드]-->
+                        <? if(cardList[i][5] != null) { ?>
+                          <td class="recPage afterClose everyElem" style="text-align:right"><span class="badge cntRec"><?=word['REC_CNT']?> : <?=cardList[i][5]?></span></td>
+                        <? } ?>
+                        <!-- 읽은 시간 -->
+                        <? if(cardList[i][3] != null && cardList[i][4] != null) { ?>
+                          <td id="readTime" class="allPage everyElem" style="text-align:right"><span class="badge"><?=cardList[i][3] + " " + cardList[i][4]?></span></td>
+                        <? } ?>
+                      </tr>
+                    </table>
+                  </li>
+                  <!-- 내용 -->
+                  <li class="list-group-item notReadPage recPage allPage afterClose everyElem givenPage">
+                    <span  style="white-space: pre-wrap"><?=cardList[i][2]?></span>
+                  </li>
+                   <?if (cardList[i][5] != 0) {?>
+                    <!-- [마감 전 - 추천 칭찬카드] -->
+                    <li class="list-group-item notReadPage allPage everyElem recNRead">
+                        <div class="btn-group btn-group-justified">
+                          <? for(var n = 5; n > 0; n --) { ?>
+                            <? var putStyle = (cardList[i][5] == n) ? "list-group-item-warning" : "";?>
+                            <? var isSelected = (cardList[i][5] == n) ? "isSelected-"+cardList[i][6] : "";
+                              check("test" + isSelected);?>
+                            <a class="btn btn-default eval_<?=n?> <?=putStyle?> <?=isSelected?>" id="eval-<?=n?>-<?=cardList[i][6]?>"><?=n?></a> 
+                          <? } ?>
+                        </div>
+                    </li>
+                  <? } ?>
+                </ul>
+              </div>
+            </form>
+        <? } ?>
+      </div> <!--<div class="row">-->
+    <? } else { ?>
+      <div class="col-xs-12 col-sm-12 col-md-12 alert alert-danger" style="text-align:center; font-weight:900; font-size: 20px;">
+        <br/><span> - 작성 마감 전 - </span><br/><br/>
+        <span style="white-space: pre-wrap">관리자가 작성 마감하여야 해당 분기 칭찬카드 조회가 가능합니다.</span><br/><br/>
+      </div>
+    <? }?>
+    <!-- dispaly section end -->
+    
+    <!-- modal section start -->
+    <div class="modal fade" id="noticeModal" role="dialog">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-body">
+          <!--success : green // info : blue // danger : red -->
+            <div id="noticeShow" class="alert" style="margin:0px;"><span id="noticeShowContent"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal section end -->
+  </div> 
+  <!-- container end --> 
+  <? if(currentCard.toString().equals(cardMenu[0][0])) { ?><!--안 읽은 카드-->
+    <script>toChangeElementsWhenNotReadPage();</script>
+  <? } else if(currentCard.toString().equals(cardMenu[1][0])) { ?><!--추천 카드-->
+    <script>toChangeElementsWhenRecPage();</script>
+  <? } else if(currentCard.toString().equals(cardMenu[2][0])) { ?><!--전체 카드-->
+    <script>toChangeElementsWhenAllPage();</script>
+  <? } else if(currentCard.toString().equals(cardMenu[3][0])) { ?><!--받은 카드-->
+    <script>toChangeElementsWhenGivenPage();</script>
+  <? } ?>
+  
+  <? if(isRecClosed.equals('Y')) { ?>
+    <? if(currentCard.toString().equals(cardMenu[1][0])) { ?>
+      <script>toChangeElementsWhenAfterClose();</script>
+    <? } ?>
+    <script>toHideSomeElementsWhenAfterClose();</script>
+  <? } ?>
+    <script>
+      $('.dropdown-menu a.periods-item').click(function() {
+        $("#periodSelect").text($(this).text());
+        $("#inputPeriodSelect").val($(this).text());
+        console.log($("#inputPeriodSelect").val());
+      });
+      $('.dropdown-menu a.cnt-item').click(function() {
+        $("#cntSelect").text($(this).text());
+        $("#inputCntSelect").val($(this).text());
+        console.log($("#inputCntSelect").val());
+      });
+      $('.dropdown-menu a.cardMenu-item').click(function() {
+        $("#cardSelect").text($(this).text());
+        $("#inputCardSelect").val($(this).text());
+        console.log($("#inputCardSelect").val());
+      });
+      
+      function hideNoticeInModal() {
+        $('#noticeShow').hide();
+      }
+      
+      var tempId;      
+      function setTempId(id) {
+        tempId = id;
+      }
+      function getTempId() {
+        return tempId;
+      }
+      
+      function setNoticeContent(num) {
+        var error = setErrorCodes();
+        $("#noticeShowContent").text(error[num]);
+        if(num == 0) { // 성공인경우
+          $("#noticeShow").addClass("alert-success").removeClass("alert-info");
+        } else if(num == 1) {
+          $("#noticeShow").addClass("alert-info");
+        } else { // 실패인 경우
+          $("#noticeShow").addClass("alert-danger").removeClass("alert-info");
+        }
+        $("#noticeShow").show();
+      }
+      
+      function setErrorCodes() {
+        var errorCodeList = Array();
+        <? for(var i = 0; i < errorCode.length; i ++) { ?>
+          errorCodeList.push(<?=errorCode[i]?>);
+        <? } ?>
+        return errorCodeList;
+      }
+      
+      function handleCardForm(formObject) {
+        var card_cmd = formObject.card_cmd.value;
+        try {
+          hideNoticeInModal();         
+          setNoticeContent(1);          
+          $("#noticeModal").modal({
+            backdrop: 'static',
+            keyboard: false
+          });
+          google.script.run.withSuccessHandler(updateResultCall).updateCardInInfoNew(formObject);
+        } catch(exception) {
+          setNoticeContent(4);
+        }      
+        return false;
+      }
+      
+      var card_seq;
+      var card_eval;
+      var updateSeq;
+      function updateResultCall(resultNum) {    
+        setNoticeContent(resultNum);
+        console.log(<?=currentCard?>);
+        var setTime = 500;
+        if(resultNum != 0) { // 성공이 아닐시
+          setTime = 1500;
+        } 
+        setTimeout(function() {
+          <? if(currentCard.toString().equals(cardMenu[0][0])) { ?> // 안읽은 카드 일때
+            $('#card-'+card_seq).remove();
+          <? } ?>
+          
+          $("#noticeModal").modal('hide');          
+          $("#noticeShow").removeClass(); 
+          $("#noticeShow").addClass("alert");
+          
+          $(".isSelected-"+card_seq).removeClass("list-group-item-warning");
+          $(".isSelected-"+card_seq).removeClass(this);
+          $('#'+updateSeq).addClass("list-group-item-warning isSelected-"+card_seq);
+        }, setTime);
+      }      
+      
+      function change2NotSelected() {
+        $('#isSelected').removeClass("list-group-item-warning");
+      }
+      
+      function change2Selected(selectId) {
+        console.log(selectId);
+        $(selectId).addClass("isSelected list-group-item-warning");
+        $(selectId).show();
+      }
+      
+      function actionWhenClicked(clickedId) {
+        setTempId(clickedId);
+        $('#card_cmd').attr('value', clickedId[0]);
+        $('#card_eval').attr('value', clickedId[1]);
+        $('#card_seq').attr('value', clickedId[2]);        
+        card_eval =clickedId[1];
+        card_seq  =clickedId[2];
+        $("#cardForm").submit();
+      }
+      
+      /* 20170922 */
+      $('.eval_1').click(function(event) {      
+        updateSeq = $(this).attr('id');
+        actionWhenClicked($(this).attr('id').split('-'));
+      }); 
+      $('.eval_2').click(function(event) {   
+        updateSeq = $(this).attr('id');
+        actionWhenClicked($(this).attr('id').split('-'));
+      }); 
+      $('.eval_3').click(function(event) {
+        updateSeq = $(this).attr('id');
+        actionWhenClicked($(this).attr('id').split('-'));
+      }); 
+      $('.eval_4').click(function(event) { 
+        updateSeq = $(this).attr('id');
+        actionWhenClicked($(this).attr('id').split('-'));
+      }); 
+      $('.eval_5').click(function(event) {  
+        updateSeq = $(this).attr('id');
+        actionWhenClicked($(this).attr('id').split('-'));
+      }); 
+    </script>
+  </body> 
+</html>

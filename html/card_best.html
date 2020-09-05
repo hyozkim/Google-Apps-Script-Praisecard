@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="kr">
+  <head>
+  <base target="_top">
+  <title>작성한 카드</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.kr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+    <script>
+        $(document).ready(function() {     
+          $('.nav > li').removeClass('active');
+          $('#menu_best_cards').addClass('active');
+          
+          $(window).resize(function() {
+            $("#resolution").html("해상도: " + $(document).width() + " x " + $(document).height());
+          }).resize(); 
+        });
+     </script>
+     
+     <style>
+       .putMP {
+         margin: 10px;
+         padding: 5px;
+       }
+       .putWordStyle {
+         font-size: 20px;
+         font-weight: 900;
+       }
+     </style>
+  </head>
+  <body>
+  <?!= include('menu'); ?>
+  <div class="container">
+    <? var bestCards = getBestCards; ?>
+    <? var cardPerCnt = 0; ?>
+    <div class="putMP"><span class="putWordStyle"><?= bestCards[0][3] ?></span></div>
+    <div class="row">
+    <? for (var i = 0; i < bestCards.length; i ++) { ?>  
+      <? if(i > 0 && bestCards[i-1][3] != bestCards[i][3]) { ?>
+        <? cardPerCnt = 0; ?>
+        </div>
+        <hr>
+        <div class="putMP"><span class="putWordStyle"><?= bestCards[i][3] ?></span></div>
+        <div class="row">
+      <? } else if(cardPerCnt > 0 && cardPerCnt % 2 == 0) { ?>
+        </div>        
+        <div class="row">
+      <? }?>
+      <!--
+      0 : seq
+      1 : 받는사람
+      2 : 내용
+      3 : 분기
+      -->
+      <div class="col-xs-12 col-sm-6 col-md-6" id='card-<?=bestCards[i][0]?>'>
+        <ul class="list-group" id='item-<?=bestCards[i][0]?>'>
+          <!-- 받는사람 -->
+          <li class="list-group-item list-group-item-success"><?=bestCards[i][1]?></li>
+          <!-- 내용 -->
+          <li class="list-group-item">
+            <p class="list-group-item-text" style="white-space: pre-wrap"><?=bestCards[i][2]?></p>
+          </li>                  
+        </ul>
+      </div>
+      <? cardPerCnt ++; ?>
+    <? } ?>
+  </div>
+  <!-- dispaly section end -->
+  </div>  
+  </body>
+</html>
