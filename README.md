@@ -7,28 +7,31 @@ Google Apps Script를 활용한 사내 칭찬카드 웹 개발
 
 ### .html
 
-|Source Name | Description |
- |    ---- | ---- |
+ |Source Name | Description |
+ | ---- | ---- |
  |menu.html| 메뉴 페이지|
  |card_write.html| 작성 > 등록 페이지|
  |card_written.html|	작성 > 내가 작성한 카드 조회 페이지|
  |card_inquiry.html| 조회 페이지|
+ |card_best.html| 우수 칭찬카드 페이지|
  |vote_monitor.html| 진행 현황 페이지|
+ |report_year.html| 통계 > 전체 페이지|	
  |report_year.html| 통계 > 년도별 페이지|		
  |report_emp.html| 통계 > 직원별 페이지	|
 
 ### .gs
 
  |Source Name | Description |
- |    ---- | ---- |
- |code.gs |HTTP 요청/응답 처리 컨트롤러|
- |queries.gs| SQL query 스크립트 |
- |card_inquiry.gs| 조회 페이지 스크립트|
- |card_write.gs| 작성 페이지 스크립트|
- |vote_monitor.gs| 진행 현황 페이지 스크립트|
+ | ---- | ---- |
+ |code.gs | HTTP 요청/응답 처리 컨트롤러|
+ |global.gs | 페이지별 변수, 공용 메소드 스크립트|
+ |database.gs | Database Module 스크립트|
+ |queries.gs| SQL query 스크립트|
+ |card_written.gs | 작성 스크립트|
+ |card_inquiry.gs | 조회 스크립트|
+ |report_all.gs | 통계 > 전체 스크립트|
  |report_year.gs| 통계 > 년도별 스크립트|
  |report_emp.gs | 통계 > 직원별 스크립트|
- |report_all.gs| 통계 > 전체 스크립트|
  |spreadsheet_info.gs| 스프레드시트 처리 스크립트|
  
 
@@ -39,7 +42,7 @@ Google Apps Script 기능으로 Spring AOP처럼 메시징 처리나 기타 관�
 
 ```
 var scriptProperties = PropertiesService.getScriptProperties();
-var value = scriptProperties.getProperty(key); // key Managers, WORDS, ... etc
+var value = scriptProperties.getProperty(key); // key: Managers, WORDS, ... etc
 ```
 
 |KEY | VALUES|
@@ -63,7 +66,7 @@ var value = scriptProperties.getProperty(key); // key Managers, WORDS, ... etc
 
 Database 서버가 미국에 있는 탓에 기본 DB Connect 시간이 2-3초 소요되는 이슈가 있어 어떤 한 로직에 필요한 DB Connect 수를 단 한번에 처리하기 위해 만든 이유도 있음.
 
-1. DbConnection Module
+`1. DbConnection Module`
 ```
 var DbConnection = function() {
   var module = {};
@@ -92,7 +95,7 @@ var DbConnection = function() {
 }
 ```
 
-2. Database 연결
+`2. Database 연결`
 ```
   var _connect = function() {
     if(!this.isConn()) {
@@ -106,7 +109,7 @@ var DbConnection = function() {
   }
 ```
 
-3. Database 연결종료
+`3. Database 연결종료`
 ``` 
   var _close = function () {
     if(this.isConn()) {
@@ -120,7 +123,7 @@ var DbConnection = function() {
   }
 ```
 
-4. Database 연결 종료 여부 확인( false: 연결 끊김 true: 연결된 상태 )
+`4. Database 연결 종료 여부 확인( false: 연결 끊김 true: 연결된 상태 )`
 ```
   var _isClosed = function () {    
     try { 
@@ -138,7 +141,7 @@ var DbConnection = function() {
   }
 ```
 
-5. Database 쿼리 실행 (type : S elect, U pdate, D elete, I nsert, C olname)
+`5. Database 쿼리 실행 (type : S elect, U pdate, D elete, I nsert, C olname)`
 ```
   var _exeQuery = function (type, query, param) {
     Logger.info("_exeQuery query : " + query);
